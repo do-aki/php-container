@@ -68,6 +68,33 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($this->test_data, $a);
     }
 
+    public function test_transpose() {
+        $e = new Enumerator([
+            [1,2],
+            [2,4],
+            [5,6],
+        ]);
+        $a = $e->transpose()->toArray();
+        $this->assertSame([
+            [1,2,5],
+            [2,4,6],
+        ], $a);
+    }
+
+    public function test_transpose_with_key() {
+        $e = new Enumerator([
+            ['a' => 1, 'b' => 2, 'c' => 3],
+            ['a' => 4, 'c' => 5, 'b' => 6],
+            ['c' => 7, 'b' => 8, 'a' => 9],
+        ]);
+        $a = $e->transpose()->toArray();
+        $this->assertSame([
+            'a' => [1, 4, 9],
+            'b' => [2, 6, 8],
+            'c' => [3, 5, 7],
+        ], $a);
+    }
+
     public function test_first() {
         $this->assertSame(
             (new Enumerator($this->test_data))->first(),

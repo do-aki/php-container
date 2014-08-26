@@ -144,6 +144,26 @@ trait Enumerable {
     }
 
     /**
+     * Return Enumerator which returns transposed Array
+     *
+     * @return \dooaki\Container\Lazy\Enumerator|Generator
+     */
+    public function transpose() {
+        return new Enumerator(function () {
+            $ret = [];
+            foreach ($this->each() as $row) {
+                foreach ($row as $k => $col) {
+                    $ret[$k][] = $col;
+                }
+            }
+
+            foreach ($ret as $k => $r) {
+                yield $k => $r;
+            }
+        });
+    }
+
+    /**
      * Return first element of each()
      *
      * @return mixed first element of each()
