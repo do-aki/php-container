@@ -219,6 +219,18 @@ trait Enumerable {
     }
 
     /**
+     * apply $action to all elements
+     *
+     * @param callable $action
+     * @return void
+     */
+    public function apply(callable $action) {
+        foreach ($this->each() as $k => $v) {
+            call_user_func($action, $v, $k);
+        }
+    }
+
+    /**
      * Return an array containing the elements in each()
      *
      * @return array

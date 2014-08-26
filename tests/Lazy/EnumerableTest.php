@@ -60,11 +60,15 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase {
 
     public function test_tap() {
         $e = new Enumerator($this->test_data);
-        $a = [];
-        $e->tap(function ($v, $k) use (&$a) {
-            $a[$k] = $v;
-        })->toArray();
 
+        $a = [];
+        $e = $e->tap(function ($v, $k) use (&$a) {
+            $a[$k] = $v;
+        });
+
+        $this->assertSame([], $a);
+
+        $e->toArray();
         $this->assertSame($this->test_data, $a);
     }
 
@@ -157,4 +161,13 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase {
         );
     }
 
+    public function test_apply() {
+        $e = new Enumerator($this->test_data);
+        $a = [];
+        $e->apply(function ($v, $k) use (&$a) {
+            $a[$k] = $v;
+        });
+
+        $this->assertSame($this->test_data, $a);
+    }
 }
