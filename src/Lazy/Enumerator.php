@@ -7,32 +7,36 @@ class Enumerator
 
     private $each;
 
-    public function __construct($array_or_callable)
+    public function __construct(callable $callable)
     {
-        if (!is_callable($array_or_callable) && !($array_or_callable instanceof \Traversable) && !is_array($array_or_callable)) {
-            throw new \InvalidArgumentException("cannot each object");
-        }
-
-        $this->each = $array_or_callable;
+        $this->each = $callable;
     }
 
     public function each(callable $action = null)
     {
-        if (is_callable($this->each)) {
-            $each = call_user_func($this->each);
-            if (!($each instanceof \Traversable) && !is_array($each)) {
-                throw new \RuntimeException("cannot each object");
-            }
+        if ($action !== null) {
+            $this->apply($action);
         } else {
-            $each = $this->each;
-        }
-
-        if ($action === null) {
+            $each = call_user_func($this->each);
+            if (!self::isIterable($each)) {
+                throw new \RuntimeException("return value is not iterable object");
+            }
             return $each;
         }
-
-        foreach ($each as $k => $v) {
-            call_user_func($action, $v, $k);
-        }
     }
+
+    private static function isIterable($target) {
+        return ($target instanceof \Traversable) || is_array($target);
+    }
+
+    public static function from($array_or_traversable) {
+        if (!self::isIterable($array_or_traversable)) {
+            throw new \InvalidArgumentException("argument is not iterable object");
+        }
+
+        return new self(function () use ($array_or_traversable) {
+            return $array_or_traversable;
+        });
+    }
+
 }

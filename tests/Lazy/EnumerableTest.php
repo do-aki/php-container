@@ -6,30 +6,34 @@ use dooaki\Container\Lazy\Enumerator;
 
 class EnumerableTest extends \PHPUnit_Framework_TestCase
 {
-    private $test_data = [
-        'a' => 1,
-        'b' => 2,
-        'c' => 3
-    ];
+    public function getTestData() {
+        return [
+            'a' => 1,
+            'b' => 2,
+            'c' => 3
+        ];
+    }
 
     public function test_toArray()
     {
-        $a = (new Enumerator($this->test_data))->toArray();
-        $this->assertSame($this->test_data, $a);
+        $a = (new Enumerator([$this, 'getTestData']))->toArray();
+        $this->assertSame($this->getTestData(), $a);
     }
 
     public function test_select_findAll()
     {
-        $e = new Enumerator(range(1, 100));
-        $a = $e->findAll(function ($v) { return $v <= 10; })->toArray();
+        $a = Enumerator::from(range(1, 100))
+            ->findAll(function ($v) { return $v <= 10; })
+            ->toArray();
 
         $this->assertSame(range(1, 10), $a);
     }
 
     public function test_map()
     {
-        $e = new Enumerator($this->test_data);
-        $a = $e->map(function ($v) { return $v * 2; })->toArray();
+        $a = (new Enumerator([$this, 'getTestData']))
+            ->map(function ($v) { return $v * 2; })
+            ->toArray();
 
         $this->assertSame([
             'a' => 2,
@@ -40,59 +44,63 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
 
     public function test_mapKey()
     {
-        $e = new Enumerator($this->test_data);
-        $a = $e->mapKey(function ($k, $v) { return str_repeat($k, 2); })->toArray();
+        $a = (new Enumerator([$this, 'getTestData']))
+            ->mapKey(function ($k, $v) { return str_repeat($k, 2); })
+            ->toArray();
 
-        $this->assertSame([
-            'aa' => 1,
-            'bb' => 2,
-            'cc' => 3
-        ], $a);
+        $this->assertSame(
+            [
+                'aa' => 1,
+                'bb' => 2,
+                'cc' => 3
+            ],
+            $a
+        );
     }
 
     public function test_mapKeyValue()
     {
-        $e = new Enumerator($this->test_data);
-        $a = $e->mapKeyValue(
-            function ($k, $v) {
-                return [str_repeat($k, 2) => $v * 2];
-            }
-        )->toArray();
+        $a = (new Enumerator([$this, 'getTestData']))
+            ->mapKeyValue(
+                function ($k, $v) {
+                    return [str_repeat($k, 2) => $v * 2];
+                }
+            )->toArray();
 
-        $this->assertSame([
-            'aa' => 2,
-            'bb' => 4,
-            'cc' => 6
-        ], $a);
+        $this->assertSame(
+            [
+                'aa' => 2,
+                'bb' => 4,
+                'cc' => 6
+            ],
+            $a
+        );
     }
 
     public function test_skip_offset()
     {
-        $e = new Enumerator(range(1, 100));
-        $a = $e->offset(90)->toArray();
+        $a = Enumerator::from(range(1, 100))->offset(90)->toArray();
 
         $this->assertSame(range(91, 100), $a);
     }
 
     public function test_take_limit()
     {
-        $e = new Enumerator(range(1, 100));
-        $a = $e->limit(10)->toArray();
+        $a = Enumerator::from(range(1, 100))->limit(10)->toArray();
 
         $this->assertSame(range(1, 10), $a);
     }
 
     public function test_take_limit_orver_range()
     {
-        $e = new Enumerator(range(1, 5));
-        $a = $e->limit(10)->toArray();
+        $a = Enumerator::from(range(1, 5))->limit(10)->toArray();
 
         $this->assertSame(range(1, 5), $a);
     }
 
     public function test_tap()
     {
-        $e = new Enumerator($this->test_data);
+        $e = new Enumerator([$this, 'getTestData']);
 
         $a = [];
         $e = $e->tap(function ($v, $k) use(&$a) { $a[$k] = $v; });
@@ -100,12 +108,12 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([], $a);
 
         $e->toArray();
-        $this->assertSame($this->test_data, $a);
+        $this->assertSame($this->getTestData(), $a);
     }
 
     public function test_transpose()
     {
-        $e = new Enumerator(
+        $e = Enumerator::from(
             [
                 [1,2],
                 [2,4],
@@ -124,7 +132,7 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
 
     public function test_transpose_with_key()
     {
-        $e = new Enumerator(
+        $e = Enumerator::from(
             [
                 ['a' => 1, 'b' => 2, 'c' => 3],
                 ['a' => 4, 'c' => 5, 'b' => 6],
@@ -144,50 +152,50 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
 
     public function test_first()
     {
-        $this->assertSame((new Enumerator($this->test_data))->first(), 1);
+        $this->assertSame(Enumerator::from($this->getTestData())->first(), 1);
     }
 
     public function test_first_empty()
     {
-        $this->assertNull((new Enumerator([]))->first());
+        $this->assertNull(Enumerator::from([])->first());
     }
 
     public function test_last()
     {
-        $this->assertSame((new Enumerator($this->test_data))->last(), 3);
+        $this->assertSame(Enumerator::from($this->getTestData())->last(), 3);
     }
 
     public function test_last_empty()
     {
-        $this->assertNull((new Enumerator([]))->last());
+        $this->assertNull(Enumerator::from([])->last());
     }
 
     public function test_any_true()
     {
-        $this->assertTrue((new Enumerator($this->test_data))->any(function ($v) { return $v > 2; }));
+        $this->assertTrue(Enumerator::from($this->getTestData())->any(function ($v) { return $v > 2; }));
     }
 
     public function test_any_false()
     {
-        $this->assertFalse((new Enumerator($this->test_data))->any(function ($v) { return $v > 3; }));
+        $this->assertFalse(Enumerator::from($this->getTestData())->any(function ($v) { return $v > 3; }));
     }
 
     public function test_all_true()
     {
-        $this->assertTrue((new Enumerator($this->test_data))->all(function ($v, $k) { return is_string($k); }));
+        $this->assertTrue(Enumerator::from($this->getTestData())->all(function ($v, $k) { return is_string($k); }));
     }
 
     public function test_all_false()
     {
-        $this->assertFalse((new Enumerator($this->test_data))->all(function ($v) { return $v < 2; }));
+        $this->assertFalse(Enumerator::from($this->getTestData())->all(function ($v) { return $v < 2; }));
     }
 
     public function test_apply()
     {
-        $e = new Enumerator($this->test_data);
+        $e = new Enumerator([$this, 'getTestData']);
         $a = [];
         $e->apply(function ($v, $k) use(&$a) { $a[$k] = $v; });
 
-        $this->assertSame($this->test_data, $a);
+        $this->assertSame($this->getTestData(), $a);
     }
 }
