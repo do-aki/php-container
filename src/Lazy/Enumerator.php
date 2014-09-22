@@ -1,6 +1,10 @@
 <?php
 namespace dooaki\Container\Lazy;
 
+/**
+ *  make Enumerable object from callable returns array or Traversable
+ *
+ */
 class Enumerator
 {
     use Enumerable;
@@ -29,6 +33,12 @@ class Enumerator
         return ($target instanceof \Traversable) || is_array($target);
     }
 
+    /**
+     * make Enumerable object from array or Traversable
+     *
+     *  @param mixed $array_or_traversable array or Traversable
+     *  @return dooaki\Container\Lazy\Enumerator
+     */
     public static function from($array_or_traversable) {
         if (!self::isIterable($array_or_traversable)) {
             throw new \InvalidArgumentException("argument is not iterable object");

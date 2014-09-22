@@ -1,6 +1,9 @@
 <?php
 namespace dooaki\Container\Lazy;
 
+/**
+ *  lazy evaluation using each method
+ */
 trait Enumerable
 {
     /**
