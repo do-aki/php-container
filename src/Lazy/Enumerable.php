@@ -286,6 +286,43 @@ trait Enumerable
     }
 
     /**
+     * Return an array which aggregated by func
+     *
+     * @param callable $func
+     * @return void
+     */
+    public function groupBy(callable $func)
+    {
+        $result = [];
+        foreach ($this->each() as $k => $v) {
+            $this->_groupBy($result, $k, $v, $func);
+        }
+        return $result;
+    }
+
+    /**
+     * call by groupBy method
+     *
+     * @see groupBy
+     * @param array    &$result
+     * @param mixed    $k
+     * @param mixed    $v
+     * @param callable $func
+     * @return void
+     */
+    private function _groupBy(&$result, $k, $v, $func)
+    {
+        if ($v instanceof self) {
+            foreach ($v->each() as $kk => $vv) {
+                $this->_groupBy($result, $kk, $vv, $func);
+            }
+        } else {
+            $aggregate_key = call_user_func($func, $v, $k);
+            $result[$aggregate_key][] = $v;
+        }
+    }
+
+    /**
      * Return an array overwrite if found same key containing the elements in each()
      *
      * @return array
@@ -297,6 +334,26 @@ trait Enumerable
             $this->_toArray($result, $k, $v);
         }
         return $result;
+    }
+
+    /**
+     * call by toArray method
+     *
+     * @see toArray
+     * @param array &$result
+     * @param mixed $k
+     * @param mixed $v
+     * @return void
+     */
+    private function _toArray(&$result, $k, $v)
+    {
+        if ($v instanceof self) {
+            foreach ($v->each() as $kk => $vv) {
+                $this->_toArray($result, $kk, $vv);
+            }
+        } else {
+            $result[$k] = $v;
+        }
     }
 
     /**
@@ -313,18 +370,16 @@ trait Enumerable
         return $result;
     }
 
-    private function _toArray(&$result, $k, $v) {
-        if ($v instanceof self) {
-            foreach ($v->each() as $kk => $vv) {
-                $this->_toArray($result, $kk, $vv);
-            }
-        } else {
-            $result[$k] = $v;
-        }
-    }
-
-
-    private function _toArrayValues(&$result, $v) {
+    /**
+     * call by toArrayValues method
+     *
+     * @see toArray
+     * @param array  &$result
+     * @param mixed  $v
+     * @return void
+     */
+    private function _toArrayValues(&$result, $v)
+    {
         if ($v instanceof self) {
             foreach ($v->each() as $vv) {
                 $this->_toArrayValues($result, $vv);

@@ -221,6 +221,39 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Enumerator::from($this->getTestData())->all(function ($v) { return $v < 2; }));
     }
 
+    public function test_groupBy()
+    {
+        $a = Enumerator::from([1,2,3,4,5,6,7,8,9])
+            ->groupBy(function ($v) { return $v % 2 === 0 ? 'even' : 'odd'; });
+
+        $this->assertArrayHasKey('odd', $a);
+        $this->assertSame([1,3,5,7,9], $a['odd']);
+        $this->assertArrayHasKey('even', $a);
+        $this->assertSame([2,4,6,8], $a['even']);
+    }
+
+    public function test_groupBy_with_key()
+    {
+        $a = Enumerator::from(['a' => 1, 'B'=> 2, 'c' => 3])
+        ->groupBy(function ($v, $k) { return ctype_upper($k) ? 'U' : 'L'; });
+
+        $this->assertArrayHasKey('U', $a);
+        $this->assertSame([2], $a['U']);
+        $this->assertArrayHasKey('L', $a);
+        $this->assertSame([1,3], $a['L']);
+    }
+
+    public function test_groupBy_include_enumerator()
+    {
+        $a = Enumerator::from([[1,4,8], [2,4,6], [3,2,1]])->map(
+            function ($v) {
+                return Enumerator::from($v)->take(2);
+            }
+        )->groupBy(function ($v) { return 0; });
+
+        $this->assertSame([[1,4,2,4,3,2]], $a);
+    }
+
     public function test_apply()
     {
         $e = new Enumerator([$this, 'getTestData']);
