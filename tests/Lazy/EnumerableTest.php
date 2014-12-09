@@ -150,6 +150,37 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function test_flatten()
+    {
+        $e = Enumerator::from(
+            [
+                1,
+                [2,3],
+                [[4], 5]
+            ]
+        );
+        $a = $e->flatten()->toArrayValues();
+        $this->assertSame([1,2,3,4,5], $a);
+    }
+
+    public function test_flatten_with_key()
+    {
+        $e = Enumerator::from(
+            [
+                'a' => 1,
+                'b' => ['c' => 2, 'd' => 3],
+                'd' => ['e' => ['f' => 4], 'g' => 5]
+            ]
+        );
+        $a = $e->flatten()->toArray();
+        $this->assertSame(
+            [
+                'a' => 1,
+                'c' => 2, 'd' => 3,
+                'f' => 4, 'g' => 5,
+            ], $a);
+    }
+
     public function test_first()
     {
         $this->assertSame(Enumerator::from($this->getTestData())->first(), 1);

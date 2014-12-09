@@ -194,6 +194,26 @@ trait Enumerable
     }
 
     /**
+     * Return Enumerator which flatten values
+     *
+     * @return \dooaki\Container\Lazy\Enumerator|Generator
+     */
+    public function flatten()
+    {
+        return new Enumerator(
+            function () {
+                foreach ($this->each() as $k => $v) {
+                    if (($v instanceof \Traversable) || is_array($v)) {
+                        yield $k => Enumerator::from($v)->flatten();
+                    } else {
+                        yield $k => $v;
+                    }
+                }
+            }
+        );
+    }
+
+    /**
      * Return first element of each()
      *
      * @return mixed first element of each()
@@ -266,7 +286,7 @@ trait Enumerable
     }
 
     /**
-     * Return an array containing the elements in each()
+     * Return an array overwrite if found same key containing the elements in each()
      *
      * @return array
      */
@@ -274,8 +294,44 @@ trait Enumerable
     {
         $result = [];
         foreach ($this->each() as $k => $v) {
-            $result[$k] = $v;
+            $this->_toArray($result, $k, $v);
         }
         return $result;
     }
+
+    /**
+     * Return an array containing the elements in each()
+     *
+     * @return array
+     */
+    public function toArrayValues()
+    {
+        $result = [];
+        foreach ($this->each() as $v) {
+            $this->_toArrayValues($result, $v);
+        }
+        return $result;
+    }
+
+    private function _toArray(&$result, $k, $v) {
+        if ($v instanceof self) {
+            foreach ($v->each() as $kk => $vv) {
+                $this->_toArray($result, $kk, $vv);
+            }
+        } else {
+            $result[$k] = $v;
+        }
+    }
+
+
+    private function _toArrayValues(&$result, $v) {
+        if ($v instanceof self) {
+            foreach ($v->each() as $vv) {
+                $this->_toArrayValues($result, $vv);
+            }
+        } else {
+            $result[] = $v;
+        }
+    }
+
 }

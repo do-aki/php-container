@@ -26,13 +26,50 @@ in your `composer.json` file:
 ```
 and run `composer install`.
 
-Synopsis
+
+Reference
 -------------
+
+dooaki\Container\Lazy\Enumerable
+=============
+
+###Synopsis
+```php
+<?php
+
+use dooaki\Container\Lazy\Enumerable;
+
+class CountUp
+{
+    use Enumerable;
+
+    public function each()
+    {
+        $i=0;
+        while(1) {
+            yield ++$i;
+        }
+    }
+}
+
+print_r((new CountUp())->take(3)->toArray());
+// Array
+// (
+//     [0] => 1
+//     [1] => 2
+//     [2] => 3
+// )
+
+```
+
+dooaki\Container\Lazy\Enumerator
+=============
+
+###Synopsis
 ```php
 <?php
 
 use dooaki\Container\Lazy\Enumerator;
-
 
 function infinity() {
     $i = 0;
@@ -65,7 +102,7 @@ Array
 
 ```
 
-Methods
+Document
 ------------
 see [API Documentation](http://do-aki.github.io/php-container/namespaces/dooaki.Container.Lazy.html)
 

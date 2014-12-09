@@ -41,7 +41,6 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->test_data, $this->toArtray($e->each()));
     }
 
-
     public function test_array()
     {
         $e = Enumerator::from($this->test_data);
