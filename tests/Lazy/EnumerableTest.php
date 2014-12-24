@@ -188,6 +188,17 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([0=>1,1=>2,2=>3,5=>4,6=>5], $a);
     }
 
+    public function test_unique_with_func()
+    {
+        $e = Enumerator::from([1,2,3,4,5,6,7,8,9]);
+        $a = $e->unique(
+            function ($v) {
+                return $v % 3;
+            }
+        )->toArray();
+        $this->assertSame([0=>1,1=>2,2=>3], $a);
+    }
+
     public function test_values()
     {
         $e = Enumerator::from([1,2,3,3,3,4,5,4,3,2,1]);

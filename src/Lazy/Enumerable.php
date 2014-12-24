@@ -213,20 +213,20 @@ trait Enumerable
         );
     }
 
-
     /**
      * Return Enumerator which returns unique values
      *
      * @return \dooaki\Container\Lazy\Enumerator
      */
-    public function unique()
+    public function unique(callable $func = null)
     {
         return new Enumerator(
-            function () {
+            function () use ($func) {
                 $exists = [];
                 foreach ($this->each() as $k => $v) {
-                    if (!in_array($v, $exists, true)) {
-                        $exists[] = $v;
+                    $comp = $func ? $func($v) : $v;
+                    if (!in_array($comp, $exists, true)) {
+                        $exists[] = $comp;
                         yield $k => $v;
                     }
                 }
