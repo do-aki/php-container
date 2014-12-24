@@ -181,6 +181,20 @@ class EnumerableTest extends \PHPUnit_Framework_TestCase
             ], $a);
     }
 
+    public function test_unique()
+    {
+        $e = Enumerator::from([1,2,3,3,3,4,5,4,3,2,1]);
+        $a = $e->unique()->toArray();
+        $this->assertSame([0=>1,1=>2,2=>3,5=>4,6=>5], $a);
+    }
+
+    public function test_values()
+    {
+        $e = Enumerator::from([1,2,3,3,3,4,5,4,3,2,1]);
+        $a = $e->unique()->values()->toArray();
+        $this->assertSame([1,2,3,4,5], $a);
+    }
+
     public function test_first()
     {
         $this->assertSame(Enumerator::from($this->getTestData())->first(), 1);

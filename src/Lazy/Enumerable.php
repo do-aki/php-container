@@ -213,6 +213,43 @@ trait Enumerable
         );
     }
 
+
+    /**
+     * Return Enumerator which returns unique values
+     *
+     * @return \dooaki\Container\Lazy\Enumerator
+     */
+    public function unique()
+    {
+        return new Enumerator(
+            function () {
+                $exists = [];
+                foreach ($this->each() as $k => $v) {
+                    if (!in_array($v, $exists, true)) {
+                        $exists[] = $v;
+                        yield $k => $v;
+                    }
+                }
+            }
+        );
+    }
+
+    /**
+     * Return Enumerator which drop keys
+     *
+     * @return \dooaki\Container\Lazy\Enumerator
+     */
+    public function values()
+    {
+        return new Enumerator(
+            function () {
+                foreach ($this->each() as $v) {
+                    yield $v;
+                }
+            }
+        );
+    }
+
     /**
      * Return first element of each()
      *
