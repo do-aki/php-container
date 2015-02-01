@@ -1,7 +1,6 @@
 <?php
 namespace dooaki\Test\Container\Lazy;
 
-use dooaki\Container\Lazy\Enumerable;
 use dooaki\Container\Lazy\Enumerator;
 
 class EnumerableTest extends \PHPUnit_Framework_TestCase

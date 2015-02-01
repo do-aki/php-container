@@ -54,7 +54,7 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     public function test_invalid_callable_return()
     {
@@ -63,11 +63,11 @@ class EnumeratorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function test_invalid_from()
     {
-        $e = Enumerator::from(null);
+        Enumerator::from(null);
     }
 
 }

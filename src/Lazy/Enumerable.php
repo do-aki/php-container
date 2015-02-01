@@ -3,6 +3,8 @@ namespace dooaki\Container\Lazy;
 
 /**
  *  lazy evaluation using each method
+ *
+ * @method \Generator each()
  */
 trait Enumerable
 {
@@ -93,7 +95,7 @@ trait Enumerable
     /**
      * Return Enumerator which first $n elements
      *
-     * @param unknown $n
+     * @param int $n
      * @return \dooaki\Container\Lazy\Enumerator
      */
     public function skip($n)
@@ -173,7 +175,7 @@ trait Enumerable
     /**
      * Return Enumerator which returns transposed Array
      *
-     * @return \dooaki\Container\Lazy\Enumerator|Generator
+     * @return \dooaki\Container\Lazy\Enumerator|\Generator
      */
     public function transpose()
     {
@@ -196,7 +198,7 @@ trait Enumerable
     /**
      * Return Enumerator which flatten values
      *
-     * @return \dooaki\Container\Lazy\Enumerator|Generator
+     * @return \dooaki\Container\Lazy\Enumerator|\Generator
      */
     public function flatten()
     {
@@ -216,7 +218,8 @@ trait Enumerable
     /**
      * Return Enumerator which returns unique values
      *
-     * @return \dooaki\Container\Lazy\Enumerator
+     * @param callable $func
+     * @return Enumerator
      */
     public function unique(callable $func = null)
     {
@@ -266,7 +269,7 @@ trait Enumerable
     /**
      * Return last element of each()
      *
-     * @return mixd last element of each()
+     * @return mixed last element of each()
      */
     public function last()
     {
@@ -326,7 +329,7 @@ trait Enumerable
      * Return an array which aggregated by func
      *
      * @param callable $func
-     * @return void
+     * @return array
      */
     public function groupBy(callable $func)
     {
